@@ -122,6 +122,8 @@ px4_add_module(
 		actuators/esc.cpp
 		actuators/hardpoint.cpp
 
+		actuators/ea_send.cpp
+
 		# Sensors
 		sensors/sensor_bridge.cpp
 		sensors/differential_pressure.cpp

@@ -1,0 +1,41 @@
+#!/bin/sh
+#
+# @name WaveFlyer
+#
+# @type Standard Plane
+# @class Plane
+#
+# @output MAIN1 throttleLeft
+# @output MAIN2 frontLeft
+# @output MAIN3 rearLeft
+# @output MAIN4 throttleRight
+# @output MAIN5 frontRight
+# @output MAIN6 rearRight
+#
+# @output AUX1 feed-through of RC AUX1 channel
+# @output AUX2 feed-through of RC AUX2 channel
+# @output AUX3 feed-through of RC AUX3 channel
+#
+# @maintainer Marcus Pham <marcus@electro.aero>
+#
+# @board intel_aerofc-v1 exclude
+# @board bitcraze_crazyflie exclude
+#
+
+sh /etc/init.d/rc.defaults
+
+if [ $AUTOCNF = yes ]
+then
+	param set PWM_AUX_RATE 50
+	param set PWM_RATE 50
+fi
+
+# Configure this as boat
+set MAV_TYPE 1
+
+#turn off airspeed sensor
+set CBRK_AIRSPD_CHK 162128
+set FW_ARSP_MODE 2
+
+set MIXER WaveFlyer
+

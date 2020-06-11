@@ -53,6 +53,8 @@
 #include "actuators/hardpoint.hpp"
 #include "sensors/sensor_bridge.hpp"
 
+#include "actuators/ea_send.hpp"
+
 #include <uavcan/helpers/heap_based_pool_allocator.hpp>
 #include <uavcan/protocol/global_time_sync_master.hpp>
 #include <uavcan/protocol/global_time_sync_slave.hpp>
@@ -198,6 +200,7 @@ private:
 	pthread_mutex_t			_node_mutex;
 	px4_sem_t			_server_command_sem;
 	UavcanEscController		_esc_controller;
+	UavcanEASend			_ea_send_controller;
 	UavcanMixingInterface 		_mixing_interface{_node_mutex, _esc_controller};
 	UavcanHardpointController	_hardpoint_controller;
 	uavcan::GlobalTimeSyncMaster	_time_sync_master;

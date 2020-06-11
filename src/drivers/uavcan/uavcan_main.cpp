@@ -81,6 +81,7 @@ UavcanNode::UavcanNode(uavcan::ICanDriver &can_driver, uavcan::ISystemClock &sys
 	ModuleParams(nullptr),
 	_node(can_driver, system_clock, _pool_allocator),
 	_esc_controller(_node),
+	_ea_send_controller(_node),
 	_hardpoint_controller(_node),
 	_time_sync_master(_node),
 	_time_sync_slave(_node),
@@ -650,6 +651,12 @@ UavcanNode::init(uavcan::NodeID node_id, UAVCAN_DRIVER::BusEvent &bus_events)
 
 	param_get(param_find("UAVCAN_ESC_IDLT"), &_idle_throttle_when_armed_param);
 	enable_idle_throttle_when_armed(true);
+
+	_ea_send_controller.init();
+
+	printf("Initialising EA Send \n");
+
+	_ea_send_controller.sendTelemetry(500);
 
 	/*  Start the Node   */
 	return _node.start();

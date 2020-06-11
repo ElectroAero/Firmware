@@ -27,7 +27,7 @@ fi
 # but also include 1+2 as they form together one output group
 # and need to be set together.
 #
-set PWM_OUT 1234
+set PWM_OUT 12345678
 
 #
 # PWM Hz - 50 Hz is the normal rate in RC cars, higher rates
