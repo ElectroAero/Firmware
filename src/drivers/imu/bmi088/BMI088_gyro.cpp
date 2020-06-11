@@ -66,7 +66,6 @@ BMI088_gyro::BMI088_gyro(I2CSPIBusOption bus_option, int bus, const char *path_g
 	_bad_registers(perf_alloc(PC_COUNT, "bmi088_gyro_bad_registers")),
 	_duplicates(perf_alloc(PC_COUNT, "bmi088_gyro_duplicates"))
 {
-	_px4_gyro.set_update_rate(BMI088_GYRO_DEFAULT_RATE);
 }
 
 BMI088_gyro::~BMI088_gyro()
@@ -422,26 +421,6 @@ BMI088_gyro::print_status()
 	perf_print_counter(_bad_transfers);
 	perf_print_counter(_bad_registers);
 	perf_print_counter(_duplicates);
-
-	::printf("checked_next: %u\n", _checked_next);
-
-	for (uint8_t i = 0; i < BMI088_GYRO_NUM_CHECKED_REGISTERS; i++) {
-		uint8_t v = read_reg(_checked_registers[i]);
-
-		if (v != _checked_values[i]) {
-			::printf("reg %02x:%02x should be %02x\n",
-				 (unsigned)_checked_registers[i],
-				 (unsigned)v,
-				 (unsigned)_checked_values[i]);
-		}
-
-		if (v != _checked_bad[i]) {
-			::printf("reg %02x:%02x was bad %02x\n",
-				 (unsigned)_checked_registers[i],
-				 (unsigned)v,
-				 (unsigned)_checked_bad[i]);
-		}
-	}
 
 	_px4_gyro.print_status();
 }
