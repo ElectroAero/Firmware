@@ -183,10 +183,6 @@ int px4_arch_adc_init(uint32_t base_address)
 		}
 	}
 
-	/* Read out result, clear EOC */
-
-	(void) rDR(base_address);
-
 	return 0;
 }
 

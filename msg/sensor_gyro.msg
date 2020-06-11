@@ -9,6 +9,4 @@ float32 z                 # angular velocity in the NED Z board axis in rad/s
 
 float32 temperature       # temperature in degrees celsius
 
-uint32 error_count
-
-uint8 ORB_QUEUE_LENGTH = 8
+uint8 ORB_QUEUE_LENGTH = 4

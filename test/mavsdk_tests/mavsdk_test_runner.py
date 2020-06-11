@@ -134,7 +134,7 @@ class Tester:
         self.gui = gui
         self.verbose = verbose
         self.start_time = datetime.datetime.now()
-        self.log_fd: Any[TextIO] = None
+        self.combined_log_fd = TextIO
 
     @classmethod
     def determine_tests(cls,
@@ -341,8 +341,6 @@ class Tester:
             is_success = False
 
         self.stop_runners()
-        # Collect what was left in output buffers.
-        self.collect_runner_output()
         self.stop_combined_log()
 
         result = {'success': is_success,
@@ -424,11 +422,9 @@ class Tester:
                 break
 
             # Workaround to prevent gz not being able to communicate
-            # with gzserver. In CI it tends to take longer.
+            # with gzserver
             if os.getenv("GITHUB_WORKFLOW") and runner.name == "gzserver":
                 time.sleep(10)
-            else:
-                time.sleep(2)
 
         if abort:
             self.stop_runners()
@@ -456,8 +452,7 @@ class Tester:
         self.log_fd = open(filename, 'w')
 
     def stop_combined_log(self) -> None:
-        if self.log_fd:
-            self.log_fd.close()
+        self.log_fd.close()
 
     def add_to_combined_log(self, output: str) -> None:
         self.log_fd.write(output)

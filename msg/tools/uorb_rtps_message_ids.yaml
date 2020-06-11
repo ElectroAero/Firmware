@@ -267,34 +267,40 @@ rtps:
     id: 117
   - msg: sensor_accel_fifo
     id: 118
-  - msg: sensor_gyro_fifo
+  - msg: sensor_accel_status
     id: 119
-  - msg: vehicle_imu
+  - msg: sensor_gyro_fifo
     id: 120
-  - msg: vehicle_imu_status
+  - msg: sensor_gyro_status
     id: 121
-  - msg: vehicle_angular_acceleration
+  - msg: sensor_accel_integrated
     id: 122
-  - msg: logger_status
+  - msg: sensor_gyro_integrated
     id: 123
-  - msg: rpm
+  - msg: vehicle_imu
     id: 124
-  - msg: hover_thrust_estimate
+  - msg: vehicle_angular_acceleration
     id: 125
-  - msg: trajectory_bezier
+  - msg: logger_status
     id: 126
-  - msg: vehicle_trajectory_bezier
+  - msg: rpm
     id: 127
-  - msg: timesync_status
+  - msg: hover_thrust_estimate
     id: 128
-  - msg: orb_test
+  - msg: trajectory_bezier
     id: 129
-  - msg: orb_test_medium
+  - msg: vehicle_trajectory_bezier
     id: 130
-  - msg: orb_test_large
+  - msg: timesync_status
     id: 131
-  - msg: yaw_estimator_status
+  - msg: orb_test
     id: 132
+  - msg: orb_test_medium
+    id: 133
+  - msg: orb_test_large
+    id: 134
+  - msg: yaw_estimator_status
+    id: 135
   ########## multi topics: begin ##########
   - msg: actuator_controls_0
     id: 150

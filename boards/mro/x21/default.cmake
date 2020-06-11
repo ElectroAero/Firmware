@@ -33,6 +33,7 @@ px4_add_board(
 		lights/blinkm
 		lights/rgbled
 		#lights/rgbled_ncp5623c
+		#lights/rgbled_pwm
 		magnetometer # all available magnetometer drivers
 		mkblctrl
 		#optical_flow # all available optical flow drivers

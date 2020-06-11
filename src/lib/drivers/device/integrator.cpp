@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2015-2020 PX4 Development Team. All rights reserved.
+ *   Copyright (c) 2015-2016 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,15 +31,30 @@
  *
  ****************************************************************************/
 
-#include "Integrator.hpp"
+/**
+ * @file integrator.cpp
+ *
+ * A resettable integrator
+ *
+ * @author Lorenz Meier <lorenz@px4.io>
+ * @author Julian Oes <julian@oes.ch>
+ */
+
+#include "integrator.h"
 
 #include <drivers/drv_hrt.h>
 
-using matrix::Vector3f;
-
-bool Integrator::put(const hrt_abstime &timestamp, const Vector3f &val)
+Integrator::Integrator(uint32_t auto_reset_interval, bool coning_compensation) :
+	_coning_comp_on(coning_compensation)
 {
-	if ((_last_integration_time == 0) || (timestamp <= _last_integration_time)) {
+	set_autoreset_interval(auto_reset_interval);
+}
+
+bool
+Integrator::put(const hrt_abstime &timestamp, const matrix::Vector3f &val, matrix::Vector3f &integral,
+		uint32_t &integral_dt)
+{
+	if (_last_integration_time == 0) {
 		/* this is the first item in the integrator */
 		_last_integration_time = timestamp;
 		_last_reset_time = timestamp;
@@ -48,12 +63,18 @@ bool Integrator::put(const hrt_abstime &timestamp, const Vector3f &val)
 		return false;
 	}
 
+	float dt = 0.0f;
+
+	// Integrate:
+	// Leave dt at 0 if the integration time does not make sense.
+	// Without this check the integral is likely to explode.
+	if (timestamp >= _last_integration_time) {
+		dt = static_cast<float>(timestamp - _last_integration_time) * 1e-6f;
+	}
+
 	// Use trapezoidal integration to calculate the delta integral
-	const float dt = static_cast<float>(timestamp - _last_integration_time) * 1e-6f;
 	const matrix::Vector3f delta_alpha = (val + _last_val) * dt * 0.5f;
 	_last_val = val;
-	_last_integration_time = timestamp;
-	_integrated_samples++;
 
 	// Calculate coning corrections if required
 	if (_coning_comp_on) {
@@ -62,7 +83,7 @@ bool Integrator::put(const hrt_abstime &timestamp, const Vector3f &val)
 		// Tian et al (2010) Three-loop Integration of GPS and Strapdown INS with Coning and Sculling Compensation
 		// Sourced: http://www.sage.unsw.edu.au/snap/publications/tian_etal2010b.pdf
 		// Simulated: https://github.com/priseborough/InertialNav/blob/master/models/imu_error_modelling.m
-		_beta += ((_last_alpha + _last_delta_alpha * (1.f / 6.f)) % delta_alpha) * 0.5f;
+		_beta += ((_last_alpha + _last_delta_alpha * (1.0f / 6.0f)) % delta_alpha) * 0.5f;
 		_last_delta_alpha = delta_alpha;
 		_last_alpha = _alpha;
 	}
@@ -70,28 +91,37 @@ bool Integrator::put(const hrt_abstime &timestamp, const Vector3f &val)
 	// accumulate delta integrals
 	_alpha += delta_alpha;
 
-	return true;
-}
+	_last_integration_time = timestamp;
 
-bool Integrator::reset(Vector3f &integral, uint32_t &integral_dt)
-{
-	if (integral_ready()) {
-		integral = Vector3f{_alpha};
-		_alpha.zero();
-
-		integral_dt = (_last_integration_time - _last_reset_time);
-		_last_reset_time = _last_integration_time;
-		_integrated_samples = 0;
+	// Only do auto reset if auto reset interval is not 0.
+	if (_auto_reset_interval > 0 && (timestamp - _last_reset_time) >= _auto_reset_interval) {
 
 		// apply coning corrections if required
 		if (_coning_comp_on) {
-			integral += _beta;
-			_beta.zero();
-			_last_alpha.zero();
+			integral = _alpha + _beta;
+
+		} else {
+			integral = _alpha;
 		}
 
-		return true;
-	}
+		// reset the integrals and coning corrections
+		_reset(integral_dt);
 
-	return false;
+		return true;
+
+	} else {
+		return false;
+	}
+}
+
+void
+Integrator::_reset(uint32_t &integral_dt)
+{
+	_alpha.zero();
+	_last_alpha.zero();
+	_beta.zero();
+
+	integral_dt = (_last_integration_time - _last_reset_time);
+
+	_last_reset_time = _last_integration_time;
 }

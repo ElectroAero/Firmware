@@ -69,8 +69,6 @@ public:
 	void ParametersUpdate();
 	void SensorCorrectionsUpdate(bool force = false);
 
-	const matrix::Dcmf &getBoardRotation() const { return _board_rotation; }
-
 private:
 
 	static constexpr int MAX_SENSOR_COUNT = 3;

@@ -63,12 +63,11 @@ class Runner:
 
     def process_output(self) -> None:
         assert self.process.stdout is not None
-        while True:
+        while not self.stop_thread.is_set():
             line = self.process.stdout.readline()
-            if not line and \
-                    (self.stop_thread.is_set() or self.poll is not None):
-                break
-            if not line or line == "\n":
+            if line == "\n":
+                continue
+            if not line:
                 continue
             self.output_queue.put(line)
             self.log_fd.write(line)
@@ -100,6 +99,8 @@ class Runner:
         if not self.stop_thread:
             return 0
 
+        self.stop_thread.set()
+
         returncode = self.process.poll()
         if returncode is None:
 
@@ -122,8 +123,8 @@ class Runner:
             print("{} exited with {}".format(
                 self.cmd, self.process.returncode))
 
-        self.stop_thread.set()
         self.thread.join()
+
         self.log_fd.close()
 
         return self.process.returncode
