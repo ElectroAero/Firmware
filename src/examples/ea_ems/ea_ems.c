@@ -42,7 +42,7 @@
 #include <nuttx/config.h>
 #include <stdio.h>
 #include <errno.h>
-#include <uORB/topics/battery_status.h>
+#include <uORB/topics/power_monitor.h>
 #include <uORB/topics/vehicle_gps_position.h>
 #include <stdlib.h>
 #include <string.h>
@@ -134,13 +134,13 @@ int ea_ems_daemon_app_main(int argc, char *argv[]) {
 	printf("Started Thread! Subscribing to battery UOrb...\n");
 
 	//Structs to contain the system state
-	struct battery_status_s battStatus;
+	struct power_monitor_s battStatus;
 	memset(&battStatus, 0, sizeof(battStatus));
 	struct vehicle_gps_position_s vehPos;
 	memset(&vehPos, 0, sizeof(vehPos));
 
 	//Subscribe to topics
-	int batt_sub = orb_subscribe(ORB_ID(battery_status));
+	int batt_sub = orb_subscribe(ORB_ID(power_monitor));
 	int vehPos_sub = orb_subscribe(ORB_ID(vehicle_gps_position));
 
 	while(!thread_should_exit) {
@@ -153,7 +153,7 @@ int ea_ems_daemon_app_main(int argc, char *argv[]) {
 		orb_check(vehPos_sub, &vehPosUpdated);
 
 		//copy a local copy, can also check for any change with above boolean
-		orb_copy(ORB_ID(battery_status), batt_sub, &battStatus);
+		orb_copy(ORB_ID(power_monitor), batt_sub, &battStatus);
 
  		printf("BattVoltage=%.2f , ", (double)battStatus.voltage_v);
  		printf("BattCurrent=%.2f , ", (double)battStatus.current_a);
@@ -169,3 +169,115 @@ int ea_ems_daemon_app_main(int argc, char *argv[]) {
  	thread_running = false;
  	return OK;
  }
+/*
+	bool updated_battery;
+	struct battery_status_s battStatus;
+
+	static int topic_handle_battery;
+	topic_handle_battery = orb_subscribe(ORB_ID(battery_status));
+
+ 	if(topic_handle_battery==ERROR){
+ 		printf("Error orb_subscribe (ERROR)=%d\n",errno);
+ 		sleep(10);
+ 		topic_handle_battery = orb_subscribe(ORB_ID(battery_status));
+ 	}
+ 	else if(topic_handle_battery==-1){
+ 		printf("Error orb_subscribe (-1)=%d\n",errno);
+ 		sleep(10);
+ 		topic_handle_battery = orb_subscribe(ORB_ID(battery_status));
+ 	}
+
+ 	if(orb_set_interval(topic_handle_battery,1000)==ERROR){
+ 		printf("Error orb_set_interval =%d\n",errno);
+ 		return ERROR;
+ 	}
+
+	if(orb_copy(ORB_ID(battery_status),topic_handle_battery,&battStatus)==ERROR){
+ 		printf("Before Looop Battery Error orb_copy =%d\n",errno);
+ 		return ERROR;
+ 	}
+
+
+	bool updated_position;
+	struct vehicle_gps_position_s positionStatus;
+
+	static int topic_handle_position;
+	topic_handle_position = orb_subscribe(ORB_ID(vehicle_gps_position));
+
+ 	 if(topic_handle_position==ERROR){
+ 		printf("Error orb_subscribe (ERROR)=%d\n",errno);
+ 		sleep(10);
+ 		topic_handle_position = orb_subscribe(ORB_ID(vehicle_gps_position));
+ 	}
+ 	else if(topic_handle_position==-1){
+ 		printf("Error orb_subscribe (-1)=%d\n",errno);
+ 		sleep(10);
+ 		topic_handle_position = orb_subscribe(ORB_ID(vehicle_gps_position));
+ 	}
+
+ 	if(orb_set_interval(topic_handle_position,1000)==ERROR){
+ 		printf("Error orb_set_interval =%d\n",errno);
+ 		return ERROR;
+ 	}
+
+ 	 if(orb_copy(ORB_ID(vehicle_gps_position),topic_handle_position,&positionStatus)==ERROR){
+ 		printf("Before Loop Position Error orb_copy =%d\n",errno);
+ 		return ERROR;
+ 	}
+
+ 	while (!thread_should_exit) {
+ 		printf("Thread looping... :");
+
+ 		if(orb_check(topic_handle_battery, &updated_battery)==ERROR){
+ 			printf("Battery Error orb_check =%d\n",errno);
+ 			if(orb_check(topic_handle_battery, &updated_battery)==ERROR){
+ 				printf("Battery Error orb_check =%d\n",errno);
+ 				return ERROR;
+ 			}
+ 		}
+ 		if(updated_battery){
+ 			if(orb_copy(ORB_ID(battery_status),topic_handle_battery,&battStatus)==ERROR){
+ 				printf("Battery Error orb_copy =%d\n",errno);
+ 				if(orb_copy(ORB_ID(battery_status),topic_handle_battery,&battStatus)==ERROR){
+ 					printf("Battery Second Error orb_copy =%d\n",errno);
+ 					return ERROR;
+ 				}
+ 			}
+ 			printf("BattVoltage=%.2f , ", (double)battStatus.voltage_v);
+ 			printf("BattCurrent=%.2f\n", (double)battStatus.current_a);
+ 		}
+ 		else {
+ 			printf("Battery Not updated");
+ 		}
+
+ 		if(orb_check(topic_handle_position, &updated_position)==ERROR){
+ 			printf("Position Error orb_check =%d\n",errno);
+ 			if(orb_check(topic_handle_position, &updated_position)==ERROR){
+ 				printf("Position Error orb_check =%d\n",errno);
+ 				return ERROR;
+ 			}
+ 		}
+
+		if(updated_position){
+ 			if(orb_copy(ORB_ID(vehicle_gps_position),topic_handle_position,&positionStatus)==ERROR){
+ 				printf("Postiion Error orb_copy =%d\n",errno);
+ 				if(orb_copy(ORB_ID(vehicle_gps_position),topic_handle_position,&positionStatus)==ERROR){
+ 					printf("Position Second Error orb_copy =%d\n",errno);
+ 					return ERROR;
+ 				}
+ 			}
+ 			printf("Velocity=%.2f , ", (double)positionStatus.vel_m_s);
+ 		}
+ 		else {
+ 			printf("Position Not updated");
+ 		}
+ 		
+ 		sleep(1);
+ 	}
+ 	
+ 	warnx("[Daemon] exiting.\n");
+ 	thread_running = false;
+ 	return OK;
+}
+
+*/
