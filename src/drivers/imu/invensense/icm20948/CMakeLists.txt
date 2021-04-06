@@ -31,8 +31,9 @@
 #
 ############################################################################
 px4_add_module(
-	MODULE drivers__imu__icm20948
+	MODULE drivers__imu__invensense__icm20948
 	MAIN icm20948
+	COMPILE_FLAGS
 	SRCS
 		AKM_AK09916_registers.hpp
 		ICM20948.cpp
@@ -46,4 +47,17 @@ px4_add_module(
 		drivers_accelerometer
 		drivers_gyroscope
 		drivers_magnetometer
+	)
+
+px4_add_module(
+	MODULE drivers__imu__invensense__icm20948_i2c_passthrough
+	MAIN icm20948_i2c_passthrough
+	COMPILE_FLAGS
+	SRCS
+		ICM20948_I2C_Passthrough.cpp
+		ICM20948_I2C_Passthrough.hpp
+		icm20948_i2c_passthrough_main.cpp
+		InvenSense_ICM20948_registers.hpp
+	DEPENDS
+		px4_work_queue
 	)

@@ -31,12 +31,15 @@
 #
 ############################################################################
 
-add_subdirectory(sensor_corrections) # used by vehicle_{acceleration, angular_velocity, imu}
+add_subdirectory(data_validator)
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 add_subdirectory(vehicle_acceleration)
 add_subdirectory(vehicle_angular_velocity)
 add_subdirectory(vehicle_air_data)
+add_subdirectory(vehicle_gps_position)
 add_subdirectory(vehicle_imu)
+add_subdirectory(vehicle_magnetometer)
 
 px4_add_module(
 	MODULE modules__sensors
@@ -45,17 +48,18 @@ px4_add_module(
 	SRCS
 		voted_sensors_update.cpp
 		sensors.cpp
-		parameters.cpp
 	DEPENDS
 		airspeed
 		conversion
+		data_validator
 		drivers__device
 		git_ecl
-		ecl_validation
 		mathlib
+		sensor_calibration
 		vehicle_acceleration
 		vehicle_angular_velocity
 		vehicle_air_data
+		vehicle_gps_position
 		vehicle_imu
-		mag_compensation
+		vehicle_magnetometer
 	)

@@ -20,7 +20,8 @@ px4_add_board(
 		TEL2:/dev/ttyS2
 		TEL4:/dev/ttyS3
 	DRIVERS
-		adc
+		adc/ads1115
+		adc/board_adc
 		barometer # all available barometer drivers
 		batt_smbus
 		camera_capture
@@ -29,27 +30,31 @@ px4_add_board(
 		distance_sensor # all available distance sensor drivers
 		dshot
 		gps
+		#heater
 		#imu # all available imu drivers
-		imu/bmi055
+		imu/bosch/bmi055
 		imu/invensense/icm20602
 		imu/invensense/icm20689
-		#imu/mpu6000 # legacy icm20602/icm20689 driver
+		imu/invensense/icm20948 # required for ak09916 mag
 		irlock
-		#lights/blinkm
-		lights/rgbled
-		lights/rgbled_ncp5623c
+		lights # all available light drivers
 		#lights/rgbled_pwm
 		#magnetometer # all available magnetometer drivers
-		magnetometer/ist8310
+		magnetometer/isentek/ist8310
 		optical_flow # all available optical flow drivers
-		#pwm_input
+		#osd
+		#pca9685
+		#pca9685_pwm_out
+		#power_monitor/ina226
+		#protocol_splitter
+		pwm_input
 		pwm_out_sim
 		pwm_out
 		px4io
 		rc_input
 		#roboclaw
+		#rpm
 		safety_button
-		#tap_esc
 		#telemetry # all available telemetry drivers
 		test_ppm
 		tone_alarm
@@ -62,9 +67,13 @@ px4_add_board(
 		commander
 		dataman
 		ekf2
+		#esc_battery
 		events
+		flight_mode_manager
 		fw_att_control
 		fw_pos_control_l1
+		gyro_calibration
+		#gyro_fft
 		land_detector
 		#landing_target_estimator
 		load_mon
@@ -83,6 +92,7 @@ px4_add_board(
 		#sih
 		temperature_compensation
 		#uuv_att_control
+		#uuv_pos_control
 		#vmount
 		vtol_att_control
 	SYSTEMCMDS
@@ -90,9 +100,11 @@ px4_add_board(
 		dmesg
 		dumpfile
 		#esc_calib
+		#gpio
 		hardfault_log
 		i2cdetect
 		led_control
+		mft
 		mixer
 		motor_ramp
 		motor_test
@@ -104,10 +116,13 @@ px4_add_board(
 		reboot
 		reflect
 		sd_bench
+		#serial_test
+		system_time
 		tests # tests and test runner
 		top
 		topic_listener
 		tune_control
+		uorb
 		usb_connected
 		ver
 		work_queue

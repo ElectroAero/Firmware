@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2017-2019 PX4 Development Team. All rights reserved.
+ *   Copyright (c) 2020 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,29 +31,21 @@
  *
  ****************************************************************************/
 
-/**
- * @file modified from tfmini_parser.h
- * @author Alex Thatcher <thatcher@electro.aero>
- *
- * Declarations of parser for the DFRobot A02YYUW Ultrasonic Sensor
- */
-
 #pragma once
 
-// Data Format for DFRobot A02YYUW
-// ===============================
-// 4 bytes total per message:
-// 1) 0xFF
-// 2) Dist_H (high 8bit)
-// 3) Dist_L (low 8bit)
-// 4) Checksum ((Byte1 + Byte2 + Byte3) & 0x00FF)
+// DMAMUX1
+#define DMAMAP_SPI1_RX    DMAMAP_DMA12_SPI1RX_0 /* DMA1:37 */
+#define DMAMAP_SPI1_TX    DMAMAP_DMA12_SPI1TX_0 /* DMA1:38 */
 
-enum class A02YYUW_PARSE_STATE {
-	STATE0_UNSYNC = 0,
-	STATE1_SYNC,
-	STATE2_GOT_DIST_H,
-	STATE3_GOT_DIST_L,
-	STATE4_GOT_CHECKSUM
-};
+#define DMAMAP_SPI2_RX    DMAMAP_DMA12_SPI2RX_0 /* DMA1:39 */
+#define DMAMAP_SPI2_TX    DMAMAP_DMA12_SPI2TX_0 /* DMA1:40 */
 
-int a02yyuw_parse(char c, char *parserbuf, unsigned *parserbuf_index, A02YYUW_PARSE_STATE *state, float *dist);
+#define DMAMAP_USART6_RX   DMAMAP_DMA12_USART6RX_0 /* DMA1:71 */
+#define DMAMAP_USART6_TX   DMAMAP_DMA12_USART6TX_0 /* DMA1:72 */
+
+// DMAMUX2
+#define DMAMAP_SPI3_RX    DMAMAP_DMA12_SPI3RX_1 /* DMA2:61 */
+#define DMAMAP_SPI3_TX    DMAMAP_DMA12_SPI3TX_1 /* DMA2:62 */
+
+#define DMAMAP_SPI6_RX    DMAMAP_BDMA_SPI6_RX /* BDMA:11 */
+#define DMAMAP_SPI6_TX    DMAMAP_BDMA_SPI6_TX /* BDMA:12 */
