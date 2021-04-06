@@ -23,6 +23,7 @@
 #
 
 sh /etc/init.d/rc.fw_defaults
+#sh /etc/init.d/rc.boat_defaults
 
 if [ $AUTOCNF = yes ]
 then

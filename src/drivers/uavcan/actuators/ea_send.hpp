@@ -8,6 +8,8 @@
 #include <uORB/topics/actuator_outputs.h>
 #include <uORB/topics/vehicle_attitude.h>
 
+#include <uORB/topics/distance_sensor.h>
+
 #include <perf/perf_counter.h>
 
 class UavcanEASend
@@ -27,12 +29,14 @@ class UavcanEASend
 		struct adc_report_s adcReport;
 		struct actuator_outputs_s actuatorOutputs;
 		struct vehicle_attitude_s vehicleAttitude;
+		struct distance_sensor_s distanceSensor;
 
 		int batt_sub;
 		int vehPos_sub;
 		int adcRep_sub;
 		int actOut_sub;
 		int vehAtt_sub;
+		int disSen_sub;
 
 		void periodic_update(const uavcan::TimerEvent &);
 		typedef uavcan::MethodBinder

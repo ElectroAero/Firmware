@@ -1,0 +1,7 @@
+module_name: DFRobot A02YYUW Ultrasonic Sensor
+serial_config:
+    - command: a02yyuw start -d ${SERIAL_DEV}
+      port_config_param:
+        name: SENS_A02YYUW_CFG
+        group: Sensors
+

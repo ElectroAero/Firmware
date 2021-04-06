@@ -31,6 +31,7 @@ void UavcanEASend::sendTelemetry(int value) {
 		memset(&adcReport, 0, sizeof(adcReport));
 		memset(&actuatorOutputs, 0, sizeof(actuatorOutputs));
 		memset(&vehicleAttitude, 0, sizeof(vehicleAttitude));
+		memset(&distanceSensor, 0, sizeof(distanceSensor));
 	}
 }
 
@@ -44,6 +45,7 @@ void UavcanEASend::periodic_update(const uavcan::TimerEvent &) {
 		adcRep_sub = orb_subscribe(ORB_ID(adc_report));
 		actOut_sub = orb_subscribe(ORB_ID(actuator_outputs));
 		vehAtt_sub = orb_subscribe(ORB_ID(vehicle_attitude));
+		disSen_sub = orb_subscribe(ORB_ID(distance_sensor));
 
 		started++;
 	}
@@ -65,6 +67,9 @@ void UavcanEASend::periodic_update(const uavcan::TimerEvent &) {
 	bool vehAttUpdated;
 	orb_check(vehAtt_sub, &vehAttUpdated);
 
+	bool disSenUpdated;
+	orb_check(disSen_sub, &disSenUpdated);
+
 	//copy a local copy, can also check for any change with above boolean
 
 	if(battStatusUpdated) {
@@ -84,6 +89,10 @@ void UavcanEASend::periodic_update(const uavcan::TimerEvent &) {
 
 	if(vehAttUpdated) {
 		orb_copy(ORB_ID(vehicle_attitude), vehAtt_sub, &vehicleAttitude);
+	}
+
+	if(disSenUpdated) {
+		orb_copy(ORB_ID(distance_sensor), disSen_sub, &distanceSensor);
 	}
 
  	//orb_copy(ORB_ID(system_power), sysPow_sub, &sysPower);
@@ -131,6 +140,10 @@ void UavcanEASend::periodic_update(const uavcan::TimerEvent &) {
 	msg.servo4 = (int)actuatorOutputs.output[3];
 	msg.servo5 = (int)actuatorOutputs.output[4];
 	msg.servo6 = (int)actuatorOutputs.output[5];
+
+	//Sixth Packet
+	msg.buffer9 = 9;
+	msg.distanceSensor = (long)((double)distanceSensor.current_distance*1000.0);
 
 	// Broadcast command at MAX_RATE_HZ
 	(void)_uavcan_pub_ea_send.broadcast(msg);
